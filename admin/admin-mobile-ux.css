@@ -204,6 +204,29 @@ body:has([data-admin-modal-backdrop]) [role="dialog"] {
   }
 }
 
+/* Dashboard owns a floating bottom navigation bar. Reserve its real footprint,
+ * including the phone safe-area, so the final cards and buttons remain reachable. */
+@media (max-width: 860px) {
+  body[data-page="dashboard"] {
+    padding-bottom: calc(112px + env(safe-area-inset-bottom)) !important;
+  }
+  body[data-page="dashboard"] .mpa-shell {
+    padding-bottom: calc(148px + env(safe-area-inset-bottom)) !important;
+  }
+  body[data-page="dashboard"] .admin-nav {
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+}
+
+@media (max-width: 380px) {
+  body[data-page="dashboard"] {
+    padding-bottom: calc(126px + env(safe-area-inset-bottom)) !important;
+  }
+  body[data-page="dashboard"] .mpa-shell {
+    padding-bottom: calc(164px + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;
