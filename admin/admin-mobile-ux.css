@@ -1,0 +1,254 @@
+/* AP Service Admin — mobile-first interaction safety layer.
+ * Loaded last so legacy page patches cannot create untappable overlays.
+ */
+:root {
+  --admin-mobile-gutter: clamp(12px, 4vw, 20px);
+  --admin-mobile-bottom-clearance: calc(24px + env(safe-area-inset-bottom));
+}
+
+html {
+  min-width: 320px;
+  overflow-x: hidden;
+  background: var(--ap-bg, #f5f8f7);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 0;
+  max-width: 100vw;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+}
+
+/* Keep every page's last controls above mobile browser chrome and any fixed nav. */
+.mpa-shell,
+.admin-shell,
+main {
+  min-width: 0;
+}
+.mpa-shell {
+  padding-bottom: calc(104px + env(safe-area-inset-bottom));
+}
+
+/* Tables must scroll inside their card, never push a transparent layer over controls. */
+.mpa-table-wrap,
+.admin-table-wrap,
+.admin-finance-grid {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.mpa-table {
+  min-width: 640px;
+}
+
+/* Dialogs are one intentional layer, centered and independently scrollable. */
+.mpa-modal-backdrop,
+.admin-modal-backdrop,
+[data-admin-modal-backdrop] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  display: grid !important;
+  place-items: center;
+  box-sizing: border-box;
+  padding: max(12px, env(safe-area-inset-top)) var(--admin-mobile-gutter) max(12px, env(safe-area-inset-bottom));
+  background: rgba(14, 35, 32, .48);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mpa-modal,
+.admin-modal,
+[data-admin-modal-backdrop] > [role="dialog"],
+.mpa-modal-backdrop > [role="dialog"] {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: min(760px, 100%);
+  max-width: 100%;
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  isolation: isolate;
+}
+
+.mpa-modal .mpa-page-head,
+.admin-modal .mpa-page-head,
+[data-admin-modal-backdrop] [role="dialog"] > .mpa-page-head {
+  position: sticky;
+  top: -1px;
+  z-index: 3;
+  margin: -16px -16px 16px;
+  padding: 14px 16px;
+  background: var(--ap-paper, #fff);
+  border-bottom: 1px solid var(--ap-line, #dce8e5);
+}
+
+.admin-modal-actions {
+  position: sticky;
+  bottom: -1px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin: 18px -16px -16px;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--ap-paper, #fff) 96%, transparent);
+  border-top: 1px solid var(--ap-line, #dce8e5);
+  backdrop-filter: blur(10px);
+}
+.admin-modal-actions .mpa-button {
+  min-height: 44px;
+  flex: 1 1 150px;
+}
+
+/* Prevent the underlying page from receiving taps while an app modal is open. */
+body:has(.mpa-modal-backdrop),
+body:has(.admin-modal-backdrop),
+body:has([data-admin-modal-backdrop]) {
+  overflow: hidden;
+  touch-action: none;
+}
+body:has(.mpa-modal-backdrop) .mpa-modal,
+body:has(.admin-modal-backdrop) .admin-modal,
+body:has([data-admin-modal-backdrop]) [role="dialog"] {
+  touch-action: auto;
+}
+
+/* Mobile controls need a reliable touch target and must never sit behind a sibling. */
+@media (max-width: 760px) {
+  .mpa-shell {
+    padding-inline: var(--admin-mobile-gutter);
+  }
+  .mpa-page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mpa-page-head .mpa-button,
+  .admin-filter-row .mpa-button,
+  .admin-table-toolbar .mpa-button {
+    width: 100%;
+    min-height: 44px;
+  }
+  .mpa-button,
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+  .mpa-field input,
+  .mpa-field select,
+  .mpa-field textarea {
+    box-sizing: border-box;
+    font-size: 16px;
+  }
+  .mpa-card {
+    min-width: 0;
+    overflow: visible;
+  }
+  .mpa-grid,
+  .admin-user-grid,
+  .admin-store-grid,
+  .admin-rider-grid,
+  .admin-finance-grid {
+    min-width: 0;
+  }
+  .admin-filter-row {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-filter-row .mpa-button {
+    width: 100%;
+  }
+  .mpa-modal-backdrop,
+  .admin-modal-backdrop,
+  [data-admin-modal-backdrop] {
+    align-items: end;
+    padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+  }
+  .mpa-modal,
+  .admin-modal,
+  [data-admin-modal-backdrop] > [role="dialog"],
+  .mpa-modal-backdrop > [role="dialog"] {
+    width: 100%;
+    max-height: calc(100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    border-radius: 20px 20px 12px 12px;
+    padding: 16px;
+  }
+  .mpa-modal .mpa-page-head,
+  .admin-modal .mpa-page-head,
+  [data-admin-modal-backdrop] [role="dialog"] > .mpa-page-head {
+    margin: -16px -16px 16px;
+    padding: 14px 16px;
+  }
+  .admin-modal-actions {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+  .admin-modal-actions .mpa-button {
+    flex-basis: 100%;
+  }
+  .mpa-toast {
+    right: 10px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    width: calc(100vw - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+@supports not (height: 100dvh) {
+  .mpa-modal,
+  .admin-modal,
+  [data-admin-modal-backdrop] > [role="dialog"],
+  .mpa-modal-backdrop > [role="dialog"] {
+    max-height: calc(100vh - 24px);
+  }
+}
+
+@supports not selector(body:has(*)) {
+  /* The backdrop itself still blocks pointer input on browsers without :has(). */
+  .mpa-modal-backdrop,
+  .admin-modal-backdrop,
+  [data-admin-modal-backdrop] {
+    pointer-events: auto;
+  }
+}
+
+/* Avoid accidental horizontal overflow from long IDs, URLs, and generated labels. */
+.mpa-card,
+.mpa-page-head,
+.admin-page-head,
+.admin-user-card,
+.admin-store-card,
+.admin-rider-card,
+.admin-notice-card,
+.admin-dashboard-section {
+  overflow-wrap: anywhere;
+}
+
+*:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--ap-brand, #0b8c7c) 45%, white);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  a, button, summary, input, select, textarea {
+    -webkit-tap-highlight-color: rgba(11, 140, 124, .16);
+  }
+}
